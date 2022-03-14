@@ -71,13 +71,13 @@ mutual
 
     whnf-prod3 : ∀ {Δ Γ Η Θ A B} {m : Η / Θ ⊢ A ∧ B} {E : Δ / Γ ⊢ Η / Θ} {v w}
 
-                      -> E ⊢ m ⇓ v      -> snd v >> w     
+                      -> E ⊢ m ⇓ v      -> snd v >> w
                    ------------------------------------
                         -> E ⊢ (DS4-prod3 m) ⇓ w
 
 
   -- Dealing with arrow elimination.
-  
+
   data _$_>>_ {Δ Γ A B} :  Val Δ Γ (A => B) -> Val Δ Γ A -> Val Δ Γ B -> Set where
 
     eval-app-ne : ∀ {m v} ->  DS4-val-ne m $ v >> (DS4-val-ne (DS4-ne-app m v))
@@ -91,7 +91,7 @@ mutual
   (DS4-val-lam E t $ v) (eval-app-lam p) = pair _ refl
 
   -- Dealing with first projection.
-  
+
   data fst_>>_ {Δ Γ A B} :  Val Δ Γ (A ∧ B) -> Val Δ Γ A -> Set where
 
     eval-fst-ne : ∀ {x} -> fst (DS4-val-ne x) >> (DS4-val-ne (DS4-ne-prod2 x))
@@ -167,7 +167,7 @@ mutual
                   -> (DS4-val-ne m) ↓ (DS4-nf-ne v)
 
     nf-lam : ∀ {A B v w} {f : Val Δ Γ (A => B)}
-    
+
                -> (val-weak-many-right f (weakone (subsetid _))) $ (DS4-val-ne (DS4-ne-var top)) >> v   -> v ↓ w
                -------------------------------------------------------------------
                                 -> f ↓ (DS4-nf-lam w)
@@ -175,7 +175,7 @@ mutual
     nf-prod1 : ∀ {A B v' w'}
                  {m : Val Δ Γ (A ∧ B)}
                  {v : Val Δ Γ A} {w : Val Δ Γ B}
-    
+
                 -> fst m >> v   -> snd m >> w   -> v ↓ v'   -> w ↓ w'
                -------------------------------------------------------
                             -> m ↓ (DS4-nf-prod1 v' w')
@@ -183,16 +183,16 @@ mutual
 
     nf-box : ∀ {Η Θ} {E : Δ / Γ ⊢ Η / Θ} {A}
                {m : · / Η ⊢ A} {v : Val · Δ A} {w : Nf · Δ A}
-    
+
                  ->  (ctxt-to-modal-ctxt E) ⊢ m ⇓ v       -> v ↓ w
                -------------------------------------------------------------------
-                     -> (DS4-val-boxI E m) ↓ (DS4-nf-boxI w) 
+                     -> (DS4-val-boxI E m) ↓ (DS4-nf-boxI w)
 
 
   data _↓ne_  {Δ Γ} : ∀ {A} -> (Ne Δ Γ Val A) -> (Ne Δ Γ Nf A) -> Set where
-  
+
       nf-var : ∀ {A} {x : A ∈ Γ}
-      
+
                -------------------------------------
                   -> (DS4-ne-var x) ↓ne (DS4-ne-var x)
 
@@ -200,21 +200,21 @@ mutual
                        {v : Ne Δ Γ Nf (A => B)}
                        {u : Val Δ Γ A}
                        {w : Nf Δ Γ A}
-      
+
                   -> t ↓ne v              -> u ↓ w
                -------------------------------------------
                   -> (DS4-ne-app t u) ↓ne (DS4-ne-app v w)
-                  
+
       nf-prod2 : ∀ {A B} {t : Ne Δ Γ Val (A ∧ B)}
                          {v : Ne Δ Γ Nf (A ∧ B)}
-      
+
                                 -> t ↓ne v
                -------------------------------------------
                   -> (DS4-ne-prod2 t) ↓ne (DS4-ne-prod2 v)
 
       nf-prod3 : ∀ {A B} {t : Ne Δ Γ Val (A ∧ B)}
                          {v : Ne Δ Γ Nf (A ∧ B)}
-      
+
                                 -> t ↓ne v
                -------------------------------------------
                   -> (DS4-ne-prod3 t) ↓ne (DS4-ne-prod3 v)
@@ -223,7 +223,7 @@ mutual
                         {v : Ne Δ Γ Nf (□ A)}
                         {u : Val (Δ , A) Γ C}
                         {w : Nf (Δ , A) Γ C}
-      
+
                   -> t ↓ne v              -> u ↓ w
                -------------------------------------------
                   -> (DS4-ne-boxE t u) ↓ne (DS4-ne-boxE v w)
@@ -236,7 +236,7 @@ mutual
   quote-str (DS4-val-ne x) (nf-prod1 p q r s) = pair (DS4-nf-prod1 _ _) refl
   quote-str (DS4-val-lam E t) (nf-lam p q) = pair (DS4-nf-lam _) refl
   quote-str (DS4-val-prod1 E t u) (nf-prod1 p q r s) = pair (DS4-nf-prod1 _ _) refl
-  quote-str (DS4-val-boxI E t) (nf-box p q) = pair (DS4-nf-boxI _) refl 
+  quote-str (DS4-val-boxI E t) (nf-box p q) = pair (DS4-nf-boxI _) refl
 
   quote-ne-str : ∀ {Δ Γ A w} -> (v : Ne Δ Γ Val A)
                  -> v ↓ne w -> Σ (Ne Δ Γ Nf A) (λ w' -> w ≡ w')
@@ -291,5 +291,3 @@ trans-K {Δ} {Γ} {□ A} (DS4-boxI t) =
     (weakone ((subst (λ x → x ⊆ trans-cx Δ ++ trans-cx Γ) (sym (leftid++ (trans-cx Δ))) (concat-subset-1 (trans-cx Δ) (trans-cx Γ)))))))
 trans-K {Δ} {Γ} {_} (DS4-boxE t u) =
   STLC.STLC-cut · (trans-K t) (let p = trans-K u in STLC.STLC-weak-many p (swap-out (trans-cx (boxcx Δ)) (trans-cx Γ) _))
-
-

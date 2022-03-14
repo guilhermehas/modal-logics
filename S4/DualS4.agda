@@ -4,63 +4,66 @@ infixl 0 _/_⊢_
 
 open import Basics
 
+private variable
+  A B C : Ty _
+
 -- Definition
 
-data _/_⊢_ (Δ Γ : Cx modal) :  Ty modal -> Set where
+data _/_⊢_ (Δ Γ : Cx modal) :  Ty modal → Set where
 
-  DS4-var : ∀ {A}
+  DS4-var :
   
-     -> A ∈ Γ
+       A ∈ Γ
     -------------
-    -> Δ / Γ ⊢ A
+     → Δ / Γ ⊢ A
 
-  DS4-modal-var : ∀ {A}
+  DS4-modal-var :
   
-     -> A ∈ Δ
+       A ∈ Δ
     ------------
-    -> Δ / Γ ⊢ A
+     → Δ / Γ ⊢ A
                
-  DS4-app : ∀ {A B}
+  DS4-app :
   
-    -> Δ / Γ ⊢ A => B    -> Δ / Γ ⊢ A
+      Δ / Γ ⊢ A => B    → Δ / Γ ⊢ A
     ---------------------------------
-          -> Δ / Γ ⊢ B
+          → Δ / Γ ⊢ B
                           
-  DS4-lam : ∀ {A B}
+  DS4-lam :
   
-     -> Δ / (Γ , A) ⊢ B
+       Δ / (Γ , A) ⊢ B
      ------------------
-     -> Δ / Γ ⊢ A => B
+     → Δ / Γ ⊢ A => B
                
-  DS4-prod : ∀ {A B}
+  DS4-prod :
   
-    -> Δ / Γ ⊢ A    -> Δ / Γ ⊢ B
+      Δ / Γ ⊢ A    → Δ / Γ ⊢ B
     ----------------------------
-       -> Δ / Γ ⊢ A ∧ B
+    → Δ / Γ ⊢ A ∧ B
                      
-  DS4-fst : ∀ {A B}
+  DS4-fst :
   
-    -> Δ / Γ ⊢ A ∧ B
+      Δ / Γ ⊢ A ∧ B
     -----------------
-      -> Δ / Γ ⊢ A
+    → Δ / Γ ⊢ A
                  
-  DS4-snd : ∀ {A B}
+  DS4-snd :
   
-    -> Δ / Γ ⊢ A ∧ B
+      Δ / Γ ⊢ A ∧ B
     ----------------
-      -> Δ / Γ ⊢ B
+    → Δ / Γ ⊢ B
                  
-  DS4-boxI : ∀ {A}
+  DS4-boxI :
   
-     -> Δ / · ⊢ A
+       Δ / · ⊢ A
     ---------------
-    -> Δ / Γ ⊢ □ A
+     → Δ / Γ ⊢ □ A
                
-  DS4-boxE : ∀ {A C}
+  DS4-boxE :
   
-    -> Δ / Γ ⊢ □ A    -> (Δ , A) / Γ ⊢ C
+      Δ / Γ ⊢ □ A     → (Δ , A) / Γ ⊢ C
     ------------------------------------
-              -> Δ / Γ ⊢ C
+               → Δ / Γ ⊢ C
 
 
 -- Weakening and exchange.
@@ -68,9 +71,9 @@ data _/_⊢_ (Δ Γ : Cx modal) :  Ty modal -> Set where
 
 exch : ∀ {Δ Γ A B C} (Γ' : Cx modal)
 
-    -> Δ / (Γ , A , B) ++ Γ' ⊢ C
+    → Δ / (Γ , A , B) ++ Γ' ⊢ C
     -----------------------------
-    -> Δ / (Γ , B , A) ++ Γ' ⊢ C
+    → Δ / (Γ , B , A) ++ Γ' ⊢ C
 
 exch Γ' (DS4-var x) = DS4-var (cx-exch {Δ = Γ'} x)
 exch Γ' (DS4-modal-var x) = DS4-modal-var x
@@ -85,9 +88,9 @@ exch Γ' (DS4-boxE d d₁) = DS4-boxE (exch Γ' d) (exch Γ' d₁)
 
 exch-modal : ∀ {Δ Γ A B C} (Δ' : Cx modal)
 
-    -> (Δ , A , B) ++ Δ' / Γ  ⊢ C
+    → (Δ , A , B) ++ Δ' / Γ  ⊢ C
     ------------------------------
-    -> (Δ , B , A) ++ Δ' / Γ ⊢ C
+    → (Δ , B , A) ++ Δ' / Γ ⊢ C
                     
 exch-modal Δ' (DS4-var x) = DS4-var x
 exch-modal Δ' (DS4-modal-var x) =
@@ -106,9 +109,9 @@ exch-modal Δ' (DS4-boxE d e) =
 
 weak : ∀ {Δ Γ Γ' A}
 
-    -> Δ / Γ ⊢ A    -> Γ ⊆ Γ'
+    → Δ / Γ ⊢ A    → Γ ⊆ Γ'
     -------------------------
-        -> (Δ / Γ' ⊢ A)
+        → (Δ / Γ' ⊢ A)
 
 weak (DS4-var x) f = DS4-var (f x)
 weak (DS4-modal-var x) f = DS4-modal-var x
@@ -124,9 +127,9 @@ weak (DS4-boxE d e) f =
 
 weak-modal : ∀ {Δ Δ' Γ A}
 
-   -> Δ / Γ ⊢ A    -> Δ ⊆ Δ'
+   → Δ / Γ ⊢ A    → Δ ⊆ Δ'
    -------------------------
-         -> Δ' / Γ ⊢ A
+         → Δ' / Γ ⊢ A
 
 weak-modal (DS4-var p) x = DS4-var p
 weak-modal (DS4-modal-var p) x = DS4-modal-var (x p)
@@ -145,11 +148,11 @@ weak-modal (DS4-boxE t u) x =
 
 -- Cut.
 
-cut : ∀ {Δ Γ A B} -> (Γ' : Cx modal)
+cut : ∀ {Δ Γ A B} → (Γ' : Cx modal)
 
-    -> Δ / Γ ⊢ A    -> Δ / Γ , A ++ Γ' ⊢ B
+    → Δ / Γ ⊢ A    → Δ / Γ , A ++ Γ' ⊢ B
     ---------------------------------------
-              -> Δ / Γ ++ Γ' ⊢ B
+              → Δ / Γ ++ Γ' ⊢ B
 
 cut · d (DS4-var top) = d
 cut · d (DS4-var (pop x)) = DS4-var x
@@ -168,11 +171,11 @@ cut Γ' d (DS4-boxE t u) =
            (cut Γ' (weak-modal d (weakone (subsetid ))) u)
 
 
-cut-modal : ∀ {Δ Γ A B} -> (Δ' : Cx modal)
+cut-modal : ∀ {Δ Γ A B} → (Δ' : Cx modal)
 
-    -> Δ / · ⊢ A    -> Δ , A ++ Δ' / Γ  ⊢ B
+    → Δ / · ⊢ A    → Δ , A ++ Δ' / Γ  ⊢ B
     ---------------------------------------
-             -> Δ ++ Δ' / Γ ⊢ B
+             → Δ ++ Δ' / Γ ⊢ B
 
 cut-modal Δ' d (DS4-var x) = DS4-var x
 cut-modal · d (DS4-modal-var top) = weak d subsetempty

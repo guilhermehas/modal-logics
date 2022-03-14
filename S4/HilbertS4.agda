@@ -8,28 +8,28 @@ open import Basics
 
 -- Definition.
 
-data ThmS4 (Γ : Cx modal) :  Ty modal -> Set where
+data ThmS4 (Γ : Cx modal) :  Ty modal → Set where
 
-  S4-var : ∀ {A : Ty modal} -> (A ∈ Γ) -> ThmS4 Γ A
-  S4-k : ∀ {A B : Ty modal} ->  ThmS4 Γ (A => (B => A))
-  S4-s : ∀ {A B C : Ty modal} -> ThmS4 Γ ((A => B => C) => (A => B) => (A => C))
-  S4-MP : ∀ {A B : Ty modal} -> ThmS4 Γ (A => B) -> ThmS4 Γ A -> ThmS4 Γ B
-  S4-NEC : ∀ {A : Ty modal} -> ThmS4 · A -> ThmS4 Γ (□ A)
-  S4-prod1 : ∀ {A B : Ty modal} -> ThmS4 Γ (A => B => A ∧ B)
-  S4-prod2 : ∀ {A B : Ty modal} -> ThmS4 Γ (A ∧ B => A)
-  S4-prod3 : ∀ {A B : Ty modal} -> ThmS4 Γ (A ∧ B => B)
-  S4-axK : ∀ {A B : Ty modal} -> ThmS4 Γ (□(A => B) => □ A => □ B)
-  S4-ax4 : ∀ {A : Ty modal} -> ThmS4 Γ (□ A => □ □ A)
-  S4-axT : ∀ {A : Ty modal} -> ThmS4 Γ (□ A => A)
+  S4-var : ∀ {A : Ty modal} → (A ∈ Γ) → ThmS4 Γ A
+  S4-k : ∀ {A B : Ty modal} →  ThmS4 Γ (A => (B => A))
+  S4-s : ∀ {A B C : Ty modal} → ThmS4 Γ ((A => B => C) => (A => B) => (A => C))
+  S4-MP : ∀ {A B : Ty modal} → ThmS4 Γ (A => B) → ThmS4 Γ A → ThmS4 Γ B
+  S4-NEC : ∀ {A : Ty modal} → ThmS4 · A → ThmS4 Γ (□ A)
+  S4-prod1 : ∀ {A B : Ty modal} → ThmS4 Γ (A => B => A ∧ B)
+  S4-prod2 : ∀ {A B : Ty modal} → ThmS4 Γ (A ∧ B => A)
+  S4-prod3 : ∀ {A B : Ty modal} → ThmS4 Γ (A ∧ B => B)
+  S4-axK : ∀ {A B : Ty modal} → ThmS4 Γ (□(A => B) => □ A => □ B)
+  S4-ax4 : ∀ {A : Ty modal} → ThmS4 Γ (□ A => □ □ A)
+  S4-axT : ∀ {A : Ty modal} → ThmS4 Γ (□ A => A)
   
 
 -- Weakening, exchange, and contraction.
 
 S4-weak : ∀ {Γ Δ} {A}
 
-    -> Γ ⊆ Δ    -> ThmS4 Γ A
+    → Γ ⊆ Δ    → ThmS4 Γ A
     ------------------------
-         -> ThmS4 Δ A
+         → ThmS4 Δ A
 
 S4-weak p (S4-var x) = S4-var (subsetdef x p)
 S4-weak p S4-k = S4-k
@@ -46,9 +46,9 @@ S4-weak p S4-axT = S4-axT
 
 S4-exch : ∀ {Γ} {A B C} (Γ' : Cx modal)
 
-    -> ThmS4 (Γ , A , B ++ Γ') C
+    → ThmS4 (Γ , A , B ++ Γ') C
     ---------------------------
-    -> ThmS4 (Γ , B , A ++ Γ') C
+    → ThmS4 (Γ , B , A ++ Γ') C
     
 S4-exch Γ' (S4-var p) = S4-var (cx-exch {Δ = Γ'} p)
 S4-exch Γ' S4-k = S4-k
@@ -64,9 +64,9 @@ S4-exch Γ' S4-axT = S4-axT
 
 S4-contr : ∀ {Γ} {A C} (Γ' : Cx modal)
 
-    -> ThmS4 (Γ , A , A ++ Γ') C
+    → ThmS4 (Γ , A , A ++ Γ') C
     ---------------------------
-     -> ThmS4 (Γ , A ++ Γ') C
+     → ThmS4 (Γ , A ++ Γ') C
 
 S4-contr Γ' (S4-var p) = S4-var (cx-contr {Δ = Γ'} p)
 S4-contr Γ' S4-k = S4-k
@@ -85,9 +85,9 @@ S4-contr Γ' S4-axT = S4-axT
 
 S4-dedthm :  ∀ {Γ : Cx modal} {A B : Ty modal}
 
-   -> ThmS4 (Γ , A) B
+   → ThmS4 (Γ , A) B
    -------------------
-   -> ThmS4 Γ (A => B)
+   → ThmS4 Γ (A => B)
 
 S4-dedthm {Γ} {A} {.A} (S4-var top) = S4-MP (S4-MP S4-s S4-k) (S4-k {Γ} {A} {A})
 S4-dedthm (S4-var (pop x)) = S4-MP S4-k (S4-var x)
@@ -107,9 +107,9 @@ S4-dedthm S4-axT = S4-MP S4-k S4-axT
 
 S4-Scott : ∀ {Γ : Cx modal} {A : Ty modal}
 
-          -> ThmS4 Γ A
+          → ThmS4 Γ A
     ------------------------
-    -> ThmS4 (boxcx Γ) (□ A)
+    → ThmS4 (boxcx Γ) (□ A)
                  
 S4-Scott (S4-var x) = S4-var (box∈cx x)
 S4-Scott S4-k = S4-NEC S4-k
@@ -131,9 +131,9 @@ S4-Scott S4-axT = S4-NEC S4-axT
 
 S4-Four : ∀ {Γ : Cx modal} {A : Ty modal}
 
-     -> ThmS4 (boxcx Γ) A
+     → ThmS4 (boxcx Γ) A
    ------------------------
-   -> ThmS4 (boxcx Γ) (□ A)
+   → ThmS4 (boxcx Γ) (□ A)
 
 S4-Four {·} (S4-var p) = S4-NEC (S4-var p)
 S4-Four {Γ , A} (S4-var top) = S4-MP S4-ax4 (S4-var top)
@@ -153,9 +153,9 @@ S4-Four S4-axT = S4-NEC S4-axT
 
 S4-normal4-ded : ∀ {Γ : Cx modal} {A : Ty modal}
 
-   -> ThmS4 (boxcx Γ ++ Γ) A
+   → ThmS4 (boxcx Γ ++ Γ) A
    --------------------------
-   -> ThmS4 (boxcx Γ) (□ A)
+   → ThmS4 (boxcx Γ) (□ A)
 
 S4-normal4-ded {·} (S4-var x) = S4-NEC (S4-var x)
 S4-normal4-ded {Γ , A} (S4-var top) = S4-var top
@@ -180,9 +180,9 @@ S4-normal4-ded S4-axT = S4-NEC S4-axT
 
 S4-ruleT : ∀ {Γ : Cx modal} {A : Ty modal}
 
-        -> ThmS4 Γ A
+        → ThmS4 Γ A
     --------------------
-    -> ThmS4 (boxcx Γ) A
+    → ThmS4 (boxcx Γ) A
 
 S4-ruleT (S4-var x) = S4-MP S4-axT (S4-var (box∈cx x))
 S4-ruleT S4-k = S4-k
@@ -201,9 +201,9 @@ S4-ruleT S4-axT = S4-axT
 
 S4-cut : ∀ {Γ : Cx modal} {A B : Ty modal}
 
-   -> ThmS4 Γ A    -> ThmS4 (Γ , A) B
+   → ThmS4 Γ A    → ThmS4 (Γ , A) B
    -----------------------------------
-             -> ThmS4 Γ B
+             → ThmS4 Γ B
                     
 S4-cut d (S4-var top) = d
 S4-cut d (S4-var (pop x)) = S4-var x
